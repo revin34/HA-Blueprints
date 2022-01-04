@@ -2,7 +2,7 @@ blueprint:
   name: Light - Automatic On Off
   description: Turn on Off when other based on other state.
   domain: automation
-  source_url: https://github.com/home-assistant/core/blob/dev/homeassistant/components/automation/blueprints/motion_light.yaml
+  source_url: https://github.com/revin34/HA-Blueprints/blob/main/blueprints/light_auto_on_off.yaml
   input:
     light_source:
       name: Light
