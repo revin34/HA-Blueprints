@@ -1,0 +1,103 @@
+blueprint:
+  # Please note that during a firmware update, lights connected to Shellies may flash, and devices may lose power
+  name: Shelly - Update Firmware via MQTT v1
+  description: Use MQTT to update all connected Shellies to the latest firmware. Please select the day you want the automation to check for new firmware updates.
+  domain: automation
+  input:
+    # Create a variable to capture the intended day for the automation to run, inspired by delphiki (https://community.home-assistant.io/u/delphiki)
+    monday_enabled:
+      name: Monday
+      default: false
+      selector:
+        boolean:
+    tuesday_enabled:
+      name: Tuesday
+      default: false
+      selector:
+        boolean:
+    wednesday_enabled:
+      name: Wednesday
+      default: false
+      selector:
+        boolean:
+    thursday_enabled:
+      name: Thursday
+      default: false
+      selector:
+        boolean:
+    friday_enabled:
+      name: Friday
+      default: false
+      selector:
+        boolean:
+    saturday_enabled:
+      name: Saturday
+      default: false
+      selector:
+        boolean:
+    sunday_enabled:
+      name: Sunday
+      default: false
+      selector:
+        boolean:
+    # Create a variable to capture the desired time for the automation to run
+    scheduled_time:
+      name: Scheduled Update Time
+      description: Choose the time of the day to run the firmware update. Note than this is in 12-hour format, and you will need to select AM or PM.
+      default: "11:00"
+      # Use a selector, to pick the desired time
+      selector:
+        time: {}
+
+# Prevent the automation from running concurrently
+mode: single
+
+# Define the variables used in the Action section
+variables:
+  current_day: "{{ now().weekday() | int }}"
+  monday_enabled: !input monday_enabled
+  tuesday_enabled: !input tuesday_enabled
+  wednesday_enabled: !input wednesday_enabled
+  thursday_enabled: !input thursday_enabled
+  friday_enabled: !input friday_enabled
+  saturday_enabled: !input saturday_enabled
+  sunday_enabled: !input sunday_enabled
+
+# Define the trigger for the automation
+trigger:
+  # Using time as the condition here, checking that the current time matches the capture desired/scheduled time for the update
+  platform: time
+  at: !input scheduled_time
+
+# Use an OR condition table to check against the selected day; this was inspired by a blueprint created by delphiki (https://community.home-assistant.io/u/delphiki)
+condition:
+ # Use on OR structure to check if current day matches any of the selected days
+ condition: or
+ conditions: 
+ - condition: template
+   value_template: "{{ (current_day == 0 and monday_enabled) }}"
+ - condition: template
+   value_template: "{{ (current_day == 1 and tuesday_enabled) }}" 
+ - condition: template
+   value_template: "{{ (current_day == 2 and wednesday_enabled) }}" 
+ - condition: template
+   value_template: "{{ (current_day == 3 and thursday_enabled) }}" 
+ - condition: template
+   value_template: "{{ (current_day == 4 and friday_enabled) }}" 
+ - condition: template
+   value_template: "{{ (current_day == 5 and saturday_enabled) }}" 
+ - condition: template
+   value_template: "{{ (current_day == 6 and sunday_enabled) }}" 
+
+# This section will simply call the MQTT Publish service to run the update command, as define in the Shelly MQTT API
+action:
+  # A very simple MQTT statement (topic and payload), which it will check if there's a more recent firmware, then if true - apply it
+  - service: mqtt.publish
+    data:
+      # Please note that during a firmware update, lights connected to Shellies may flash, and devices may lose power
+      topic: shellies/command
+      payload: update_fw
+      # Use QoS2 for confident messaging
+      qos: 2
+      # No need to retain
+      retain: false
