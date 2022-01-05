@@ -2,6 +2,7 @@ blueprint:
   # Please note that during a firmware update, lights connected to Shellies may flash, and devices may lose power
   name: Shelly - Update Firmware via MQTT v1
   description: Use MQTT to update all connected Shellies to the latest firmware. Please select the day you want the automation to check for new firmware updates.
+#  original_url: https://gist.github.com/CyanAutomation/909c44e133d3b50193d59004049f8e84
   domain: automation
   input:
     # Create a variable to capture the intended day for the automation to run, inspired by delphiki (https://community.home-assistant.io/u/delphiki)
