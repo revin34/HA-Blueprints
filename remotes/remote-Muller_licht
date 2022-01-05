@@ -1,0 +1,173 @@
+blueprint:
+  name: remote - Muller Licht (Z2M) v1
+  description: Bind two lights together to act in unison 
+  source_url: tps://community.home-assistant.io/t/zigbee2mqtt-muller-licht-tint-remote-mli-404011/372049
+  domain: automation
+  input:
+    remote:
+      name: Remote
+      description: Remote control entity
+      selector:
+        entity:
+          integration: mqtt
+          domain: sensor
+    target_light_1:
+      name: Light 1
+      description: Lights to control for 1 (*--)
+      selector:
+        target:
+          entity:
+            domain: light
+    target_light_2:
+      name: Light 2
+      description: Lights to control for 2 (-*-)
+      selector:
+        target:
+          entity:
+            domain: light
+    target_light_3:
+      name: Light 3
+      description: Lights to control for 3 (--*)
+      selector:
+        target:
+          entity:
+            domain: light
+    scene_3:
+      name: Reading scene
+      selector:
+        target: {}
+    scene_1:
+      name: Sunset scene
+      selector:
+        target: {}
+    scene_2:
+      name: Party scene
+      selector:
+        target: {}
+    scene_6:
+      name: Night scene
+      selector:
+        target: {}
+    scene_4:
+      name: Fire scene
+      selector:
+        target: {}
+    scene_5:
+      name: Romantic scene
+      selector:
+        target: {}
+  source_url: https://community.home-assistant.io/t/zigbee2mqtt-muller-licht-tint-remote-mli-404011/372049
+trigger:
+- platform: event
+  event_type: state_changed
+  event_data:
+    entity_id: !input 'remote'
+condition: []
+action:
+- choose:
+  - conditions:
+    - condition: template
+      value_template: '{{ action_name=="on" or action_name=="off" }}'
+    sequence:
+    - service: light.toggle
+      target: '{{ target_device }}'
+  - conditions:
+    - condition: template
+      value_template: "{{ \n   (trigger.event.data.new_state.attributes.action==\"\
+        scene_1\") \n}}"
+    sequence:
+    - service: homeassistant.turn_on
+      target: !input 'scene_1'
+  - conditions:
+    - condition: template
+      value_template: "{{ \n   (trigger.event.data.new_state.attributes.action==\"\
+        scene_2\") \n}}        "
+    sequence:
+    - service: homeassistant.turn_on
+      target: !input 'scene_2'
+  - conditions:
+    - condition: template
+      value_template: "{{ \n   (trigger.event.data.new_state.attributes.action==\"\
+        scene_3\") \n}}"
+    sequence:
+    - service: homeassistant.turn_on
+      target: !input 'scene_3'
+  - conditions:
+    - condition: template
+      value_template: "{{ \n   (trigger.event.data.new_state.attributes.action==\"\
+        scene_4\") \n}}"
+    sequence:
+    - service: homeassistant.turn_on
+      target: !input 'scene_4'
+  - conditions:
+    - condition: template
+      value_template: "{{ \n   (trigger.event.data.new_state.attributes.action==\"\
+        scene_5\") \n}}"
+    sequence:
+    - service: homeassistant.turn_on
+      target: !input 'scene_5'
+  - conditions:
+    - condition: template
+      value_template: "{{ \n   (trigger.event.data.new_state.attributes.action==\"\
+        scene_6\") \n}}"
+    sequence:
+    - service: homeassistant.turn_on
+      target: !input 'scene_6'
+  - conditions:
+    - condition: template
+      value_template: "{{ \n   (trigger.event.data.new_state.attributes.action==\"\
+        color_temp\") \n}}"
+    sequence:
+    - service: light.turn_on
+      target: '{{ target_device }}'
+      data:
+        color_temp: '{{ action_color_temp }}'
+  - conditions:
+    - condition: template
+      value_template: "{{ \n   (trigger.event.data.new_state.attributes.action==\"\
+        brightness_down_click\") \n}}"
+    sequence:
+    - service: light.turn_on
+      target: '{{ target_device }}'
+      data:
+        brightness_step: -20
+        transition: 1
+  - conditions:
+    - condition: template
+      value_template: "{{ \n   (trigger.event.data.new_state.attributes.action==\"\
+        brightness_up_click\") \n}}"
+    sequence:
+    - service: light.turn_on
+      target: '{{ target_device }}'
+      data:
+        brightness_step: 20
+        transition: 1
+  - conditions:
+    - condition: template
+      value_template: "{{ \n   (trigger.event.data.new_state.attributes.action==\"\
+        color_wheel\") \n}}"
+    sequence:
+    - service: light.turn_on
+      target: '{{ target_device }}'
+      data:
+        xy_color:
+        - '{{ action_color.x }}'
+        - '{{ action_color.y }}'
+  default:
+  - service: logbook.log
+    data:
+      name: Oops
+      message: Unhandled remote action
+mode: single
+variables:
+  action_color_temp: '{{ trigger.event.data.new_state.attributes.action_color_temperature
+    }}'
+  action_color: '{{ trigger.event.data.new_state.attributes.action_color }}'
+  action_name: '{{ trigger.event.data.new_state.attributes.action }}'
+  target_light_1: !input 'target_light_1'
+  target_light_2: !input 'target_light_2'
+  target_light_3: !input 'target_light_3'
+  target_device: "{%- if trigger.event.data.new_state.attributes.action_group==16388\
+    \ -%} \n{{ target_light_1 }}\n{%- elif trigger.event.data.new_state.attributes.action_group==16389\
+    \ -%}\n{{ target_light_2 }}\n{%- elif trigger.event.data.new_state.attributes.action_group==16390\
+    \ -%} \n{{ target_light_3 }}\n{%- else -%} \nunknown\n{%- endif -%}"
