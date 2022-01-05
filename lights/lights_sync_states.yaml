@@ -2,7 +2,6 @@ blueprint:
   name: Light - Sync 2 lights States v1
   description: Bind two lights together to act in unison 
   domain: automation
-  source_url: https://github.com/home-assistant/core/blob/dev/homeassistant/components/automation/blueprints/motion_light.yaml
   input:
     light_1:
       name: light (shelly)
