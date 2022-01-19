@@ -1,7 +1,7 @@
 blueprint:
-  name: Remote - Muller Licht (Z2M) v1
-  description: Bind two lights together to act in unison 
-  source_url: tps://community.home-assistant.io/t/zigbee2mqtt-muller-licht-tint-remote-mli-404011/372049
+  name: Remote - Muller Licht (Z2M) v2
+  description: control muller licht remote with Z2M
+  source_url: https://community.home-assistant.io/t/zigbee2mqtt-muller-licht-tint-remote-mli-404011/372049
   domain: automation
   input:
     remote:
@@ -56,7 +56,6 @@ blueprint:
       name: Romantic scene
       selector:
         target: {}
-  source_url: https://community.home-assistant.io/t/zigbee2mqtt-muller-licht-tint-remote-mli-404011/372049
 trigger:
 - platform: event
   event_type: state_changed
