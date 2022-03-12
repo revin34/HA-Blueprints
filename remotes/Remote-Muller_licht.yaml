@@ -1,5 +1,5 @@
 blueprint:
-  name: MQTT - Müller-Lint Tint remote
+  name: Remote - Müller Lint Tint - MQTT v1
   description: Control lights with a Müller-Lint Tint Switch.
   domain: automation
   input:
