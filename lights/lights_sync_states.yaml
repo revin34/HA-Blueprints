@@ -1,5 +1,5 @@
 blueprint:
-  name: Light - Sync 2 lights States v1
+  name: Light - Sync 2 lights States v2
   description: Bind two lights together to act in unison 
 # original_url: 
   domain: automation
