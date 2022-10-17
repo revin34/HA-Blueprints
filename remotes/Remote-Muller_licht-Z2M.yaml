@@ -3,7 +3,7 @@ blueprint:
   description: Control lights with a Müller-Lint Tint Switch.
   domain: automation
   input:
-    dimmer:
+    remote:
       name: Remote mqtt topic
       description: This must be the TOPIC from zigbee2mqtt. For example z2m/remote_1
       selector:
@@ -72,7 +72,7 @@ blueprint:
 
 trigger:
   - platform: mqtt
-    topic: !input "dimmer"
+    topic: !input "remote"
 action:
   - variables:
       command: "{{trigger.payload_json.action}}"
